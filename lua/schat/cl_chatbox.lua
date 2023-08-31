@@ -1,5 +1,5 @@
 local function GetHTMLCode()
-return [[<!DOCTYPE html>
+	return [[<!DOCTYPE html>
 <html lang="en-US">
 
 <head>
@@ -492,161 +492,173 @@ img {
 end
 
 local SChatBox = {
-    lastSearch = ""
+	lastSearch = "",
 }
 
 function SChatBox:Init()
-    self:SetAllowLua( false )
-    self:SetHTML( GetHTMLCode() )
+	self:SetAllowLua(false)
+	self:SetHTML(GetHTMLCode())
 
-    self:AddInternalCallback( "OnPressFind", function()
-        self:FindText()
-    end )
+	self:AddInternalCallback("OnPressFind", function()
+		self:FindText()
+	end)
 
-    self:AddInternalCallback( "OnPressEnter", function()
-        self:OnPressEnter()
-    end )
+	self:AddInternalCallback("OnPressEnter", function()
+		self:OnPressEnter()
+	end)
 
-    self:AddInternalCallback( "OnClickLink", function( url )
-        self:OnClickLink( url )
-    end )
+	self:AddInternalCallback("OnClickLink", function(url)
+		self:OnClickLink(url)
+	end)
 
-    self:AddInternalCallback( "OnImageHover", function( url, isHovering )
-        self:OnImageHover( url, isHovering )
-    end )
+	self:AddInternalCallback("OnImageHover", function(url, isHovering)
+		self:OnImageHover(url, isHovering)
+	end)
 
-    self:AddInternalCallback( "OnSelectEmoji", function( id )
-        self:OnSelectEmoji( id )
-    end )
+	self:AddInternalCallback("OnSelectEmoji", function(id)
+		self:OnSelectEmoji(id)
+	end)
 
-    self:AddInternalCallback( "OnRightClick", function( data, isLink, steamId64 )
-        if SChat.isOpen then
-            SChat:OpenContextMenu( data, isLink, steamId64 )
-        end
-    end )
+	self:AddInternalCallback("OnRightClick", function(data, isLink, steamId64)
+		if SChat.isOpen then
+			SChat:OpenContextMenu(data, isLink, steamId64)
+		end
+	end)
 end
 
 function SChatBox:UpdateEmojiPanel()
-    self:QueueJavascript( SChat:GenerateEmojiList() )
+	self:QueueJavascript(SChat:GenerateEmojiList())
 end
 
-function SChatBox:AddInternalCallback( name, callback )
-    self:AddFunction( "SChatBox", name, callback )
+function SChatBox:AddInternalCallback(name, callback)
+	self:AddFunction("SChatBox", name, callback)
 end
 
 function SChatBox:FindText()
-    local reqFrame = Derma_StringRequest(
-        "Find...",
-        "Input some text you want to find on the chat",
-        self.lastSearch,
-        function( text )
-            self.lastSearch = text
-            text = string.JavascriptSafe( text )
-            self:QueueJavascript( string.format( "findAndHighlight('%s')", text ) )
-        end
-    )
+	local reqFrame = Derma_StringRequest(
+		"Find...",
+		"Input some text you want to find on the chat",
+		self.lastSearch,
+		function(text)
+			self.lastSearch = text
+			text = string.JavascriptSafe(text)
+			self:QueueJavascript(string.format("findAndHighlight('%s')", text))
+		end
+	)
 
-    local x, y, selfW, selfH = self:GetBounds()
-    x, y = self:LocalToScreen( x, y )
+	local x, y, selfW, selfH = self:GetBounds()
+	x, y = self:LocalToScreen(x, y)
 
-    local w, h = reqFrame:GetSize()
+	local w, h = reqFrame:GetSize()
 
-    x = x + ( selfW * 0.5 ) - ( w * 0.5 )
-    y = y + ( selfH * 0.5 ) - ( h * 0.5 )
+	x = x + (selfW * 0.5) - (w * 0.5)
+	y = y + (selfH * 0.5) - (h * 0.5)
 
-    reqFrame:SetPos( x, y )
+	reqFrame:SetPos(x, y)
 end
 
 function SChatBox:ScrollToBottom()
-    self:QueueJavascript( "scrollToBottom();" )
+	self:QueueJavascript("scrollToBottom();")
 end
 
 function SChatBox:ClearSelection()
-    self:QueueJavascript( "clearSelection();" )
+	self:QueueJavascript("clearSelection();")
 end
 
 function SChatBox:ClearTempMessages()
-    self:QueueJavascript( "elmTemp.textContent = '';" )
+	self:QueueJavascript("elmTemp.textContent = '';")
 end
 
 function SChatBox:ClearEverything()
-    self:QueueJavascript( "elmMain.textContent = ''; appendCount = 0;" )
+	self:QueueJavascript("elmMain.textContent = ''; appendCount = 0;")
 end
 
-function SChatBox:SetVisible( enable )
-    self:QueueJavascript( "setChatVisible(" .. ( enable and "true" or "false" ) .. ");" )
+function SChatBox:SetVisible(enable)
+	self:QueueJavascript(
+		"setChatVisible(" .. (enable and "true" or "false") .. ");"
+	)
 end
 
-function SChatBox:SetDisplayMode( mode )
-    self:QueueJavascript( "setDisplayMode('" .. mode .. "');" )
+function SChatBox:SetDisplayMode(mode)
+	self:QueueJavascript("setDisplayMode('" .. mode .. "');")
 end
 
 function SChatBox:ToggleEmojiPanel()
-    self:QueueJavascript( "toggleEmojiPanel()" )
+	self:QueueJavascript("toggleEmojiPanel()")
 end
 
-function SChatBox:SetHighlightColor( color )
-    local code = "document.styleSheets[0].cssRules[0].style.backgroundColor = 'rgb(%d,%d,%d)';"
-    self:Call( string.format( code, color.r, color.g, color.b ) )
+function SChatBox:SetHighlightColor(color)
+	local code =
+		"document.styleSheets[0].cssRules[0].style.backgroundColor = 'rgb(%d,%d,%d)';"
+	self:Call(string.format(code, color.r, color.g, color.b))
 end
 
-function SChatBox:SetBackgroundColor( color )
-    local code = "elmMain.style.backgroundColor = 'rgba(%d,%d,%d,%02.2f)';"
-    self:QueueJavascript( string.format( code, color.r, color.g, color.b, color.a / 255 ) )
+function SChatBox:SetBackgroundColor(color)
+	local code = "elmMain.style.backgroundColor = 'rgba(%d,%d,%d,%02.2f)';"
+	self:QueueJavascript(
+		string.format(code, color.r, color.g, color.b, color.a / 255)
+	)
 end
 
-function SChatBox:SetFontSize( size )
-    size = size and math.Round( size ) or 16
-    self:QueueJavascript(
-        string.format( "elmMain.style.fontSize = '%spx'; elmTemp.style.fontSize = '%spx';", size, size )
-    )
+function SChatBox:SetFontSize(size)
+	size = size and math.Round(size) or 16
+	self:QueueJavascript(
+		string.format(
+			"elmMain.style.fontSize = '%spx'; elmTemp.style.fontSize = '%spx';",
+			size,
+			size
+		)
+	)
 end
 
-function SChatBox:SetDefaultFont( fontName )
-    local code = "document.styleSheets[1].cssRules[0].style.fontFamily = '%s';"
-    self:QueueJavascript( string.format( code, fontName ) )
+function SChatBox:SetDefaultFont(fontName)
+	local code = "document.styleSheets[1].cssRules[0].style.fontFamily = '%s';"
+	self:QueueJavascript(string.format(code, fontName))
 end
 
-function SChatBox:SetFontShadowEnabled( enabled )
-    local code = "elmMain.style.textShadow = '%s'; elmTemp.style.textShadow = '%s';"
-    local shadowCSS = enabled and "1px 1px 2px #000, 0px 0px 2px #000" or ""
+function SChatBox:SetFontShadowEnabled(enabled)
+	local code =
+		"elmMain.style.textShadow = '%s'; elmTemp.style.textShadow = '%s';"
+	local shadowCSS = enabled and "1px 1px 2px #000, 0px 0px 2px #000" or ""
 
-    self:QueueJavascript( string.format( code, shadowCSS, shadowCSS ) )
+	self:QueueJavascript(string.format(code, shadowCSS, shadowCSS))
 end
 
-function SChatBox:SetScrollbarBackgroundColor( color )
-    local code = "document.styleSheets[0].cssRules[1].style.backgroundColor = 'rgba(%d,%d,%d,%02.2f)';"
-    self:Call( string.format( code, color.r, color.g, color.b, color.a / 255 ) )
+function SChatBox:SetScrollbarBackgroundColor(color)
+	local code =
+		"document.styleSheets[0].cssRules[1].style.backgroundColor = 'rgba(%d,%d,%d,%02.2f)';"
+	self:Call(string.format(code, color.r, color.g, color.b, color.a / 255))
 end
 
-function SChatBox:SetScrollbarThumbColor( color )
-    local code = "document.styleSheets[0].cssRules[2].style.backgroundColor = 'rgba(%d,%d,%d,%02.2f)';"
-    self:Call( string.format( code, color.r, color.g, color.b, color.a / 255 ) )
+function SChatBox:SetScrollbarThumbColor(color)
+	local code =
+		"document.styleSheets[0].cssRules[2].style.backgroundColor = 'rgba(%d,%d,%d,%02.2f)';"
+	self:Call(string.format(code, color.r, color.g, color.b, color.a / 255))
 end
 
-function SChatBox:AppendContents( contents )
-    if not istable( contents ) then
-        ErrorNoHalt( "Contents must be a table!" )
-        return
-    end
+function SChatBox:AppendContents(contents)
+	if not istable(contents) then
+		ErrorNoHalt("Contents must be a table!")
+		return
+	end
 
-    self:QueueJavascript( SChat:GenerateMessageFromTable( contents ) )
+	self:QueueJavascript(SChat:GenerateMessageFromTable(contents))
 end
 
-function SChatBox:ConsoleMessage( msg )
-    if istable( msg ) then
-        msg = util.TableToJSON( msg, false )
-    end
+function SChatBox:ConsoleMessage(msg)
+	if istable(msg) then
+		msg = util.TableToJSON(msg, false)
+	end
 
-    SChat.PrintF( "JS: %s", tostring( msg ) )
+	SChat.PrintF("JS: %s", tostring(msg))
 end
 
-function SChatBox:OnClickLink( url )
-    gui.OpenURL( url )
+function SChatBox:OnClickLink(url)
+	gui.OpenURL(url)
 end
 
 function SChatBox:OnPressEnter() end
-function SChatBox:OnImageHover( _url, _isHovering ) end
+function SChatBox:OnImageHover(_url, _isHovering) end
 function SChatBox:OnSelectEmoji() end
 
-vgui.Register( "SChatBox", SChatBox, "DHTML" )
+vgui.Register("SChatBox", SChatBox, "DHTML")

@@ -4,153 +4,153 @@
 -- to many languages (especially SF/E2/Lua)
 
 local punctuation = {
-    ["["] = "bracket",
-    ["]"] = "bracket",
-    ["{"] = "bracket",
-    ["}"] = "bracket",
-    ["("] = "bracket",
-    [")"] = "bracket"
+	["["] = "bracket",
+	["]"] = "bracket",
+	["{"] = "bracket",
+	["}"] = "bracket",
+	["("] = "bracket",
+	[")"] = "bracket",
 }
 
 local groups = {
-    ["\""] = "string",
-    ["'"] = "string"
+	['"'] = "string",
+	["'"] = "string",
 }
 
 local keywords = {
-    ["if"] = "keyword",
-    ["then"] = "keyword",
-    ["elseif"] = "keyword",
-    ["else"] = "keyword",
-    ["do"] = "keyword",
-    ["end"] = "keyword",
-    ["local"] = "keyword",
-    ["var"] = "keyword",
-    ["const"] = "keyword",
-    ["for"] = "keyword",
-    ["while"] = "keyword",
-    ["continue"] = "keyword",
-    ["function"] = "keyword",
-    ["return"] = "keyword",
+	["if"] = "keyword",
+	["then"] = "keyword",
+	["elseif"] = "keyword",
+	["else"] = "keyword",
+	["do"] = "keyword",
+	["end"] = "keyword",
+	["local"] = "keyword",
+	["var"] = "keyword",
+	["const"] = "keyword",
+	["for"] = "keyword",
+	["while"] = "keyword",
+	["continue"] = "keyword",
+	["function"] = "keyword",
+	["return"] = "keyword",
 
-    ["print"] = "func",
-    ["Vector"] = "func",
-    ["Angle"] = "func",
-    ["Color"] = "func",
-    ["vec"] = "func",
-    ["vec2"] = "func",
-    ["vec4"] = "func",
+	["print"] = "func",
+	["Vector"] = "func",
+	["Angle"] = "func",
+	["Color"] = "func",
+	["vec"] = "func",
+	["vec2"] = "func",
+	["vec4"] = "func",
 
-    ["undefined"] = "const",
-    ["nil"] = "const",
-    ["true"] = "const",
-    ["false"] = "const",
-    ["SERVER"] = "const",
-    ["CLIENT"] = "const",
-    ["_G"] = "const"
+	["undefined"] = "const",
+	["nil"] = "const",
+	["true"] = "const",
+	["false"] = "const",
+	["SERVER"] = "const",
+	["CLIENT"] = "const",
+	["_G"] = "const",
 }
 
 local colors = {
-    text = "#FFFFFF",
-    bracket = "#FFD700",
-    string = "#CE9178",
-    number = "#B5CEA8",
-    keyword = "#C586C0",
-    func = "#DCDC80",
-    const = "#569CD6"
+	text = "#FFFFFF",
+	bracket = "#FFD700",
+	string = "#CE9178",
+	number = "#B5CEA8",
+	keyword = "#C586C0",
+	func = "#DCDC80",
+	const = "#569CD6",
 }
 
-function SChat:GenerateHighlightTokens( inputStr )
-    local inputLen = string.len( inputStr ) + 1
-    local tokens = {}
-    local buff = ""
-    local c = 0
+function SChat:GenerateHighlightTokens(inputStr)
+	local inputLen = string.len(inputStr) + 1
+	local tokens = {}
+	local buff = ""
+	local c = 0
 
-    local function CharAt( idx )
-        return string.sub( inputStr, idx, idx )
-    end
+	local function CharAt(idx)
+		return string.sub(inputStr, idx, idx)
+	end
 
-    local function pushToken( type, value )
-        if buff:len() > 0 then
-            tokens[#tokens + 1] = {
-                color = colors["text"],
-                value = buff
-            }
+	local function pushToken(type, value)
+		if buff:len() > 0 then
+			tokens[#tokens + 1] = {
+				color = colors["text"],
+				value = buff,
+			}
 
-            buff = ""
-        end
+			buff = ""
+		end
 
-        tokens[#tokens + 1] = {
-            color = colors[type],
-            value = value
-        }
-    end
+		tokens[#tokens + 1] = {
+			color = colors[type],
+			value = value,
+		}
+	end
 
-    while c < inputLen do
-        c = c + 1
+	while c < inputLen do
+		c = c + 1
 
-        local char = CharAt( c )
+		local char = CharAt(c)
 
-        if punctuation[char] then
-            pushToken( punctuation[char], char )
-            continue
-        end
+		if punctuation[char] then
+			pushToken(punctuation[char], char)
+			continue
+		end
 
-        if char:find( "%d" ) then
-            local value = ""
+		if char:find("%d") then
+			local value = ""
 
-            while char:find( "%d" ) do
-                value = value .. char
-                c = c + 1
-                char = CharAt( c )
-            end
+			while char:find("%d") do
+				value = value .. char
+				c = c + 1
+				char = CharAt(c)
+			end
 
-            pushToken( "number", value )
-            c = c - 1
-            continue
-        end
+			pushToken("number", value)
+			c = c - 1
+			continue
+		end
 
-        if groups[char] then
-            local type = groups[char]
-            local opener = char
-            local value = char
+		if groups[char] then
+			local type = groups[char]
+			local opener = char
+			local value = char
 
-            c = c + 1
-            char = CharAt( c )
+			c = c + 1
+			char = CharAt(c)
 
-            while char ~= opener and c < inputLen do
-                value = value .. char
-                c = c + 1
-                char = CharAt( c )
-            end
+			while char ~= opener and c < inputLen do
+				value = value .. char
+				c = c + 1
+				char = CharAt(c)
+			end
 
-            pushToken( type, value .. char )
-            continue
-        end
+			pushToken(type, value .. char)
+			continue
+		end
 
-        if char:find( "[%w_]" ) then
-            local value = ""
+		if char:find("[%w_]") then
+			local value = ""
 
-            while char:find( "[%w_]" ) and c < inputLen do
-                value = value .. char
-                c = c + 1
-                char = CharAt( c )
-            end
+			while char:find("[%w_]") and c < inputLen do
+				value = value .. char
+				c = c + 1
+				char = CharAt(c)
+			end
 
-            pushToken( keywords[value] or "text", value )
-            c = c - 1
-            continue
-        end
+			pushToken(keywords[value] or "text", value)
+			c = c - 1
+			continue
+		end
 
-        buff = buff .. char
-    end
+		buff = buff .. char
+	end
 
-    if buff:len() > 0 then
-        tokens[#tokens + 1] = {
-            color = colors["text"],
-            value = buff
-        }
-    end
+	if buff:len() > 0 then
+		tokens[#tokens + 1] = {
+			color = colors["text"],
+			value = buff,
+		}
+	end
 
-    return tokens
+	return tokens
 end
