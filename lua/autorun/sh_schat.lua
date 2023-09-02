@@ -82,10 +82,15 @@ local function normaliseEmotes(str)
 		end
 
 		local emote, isCustom = SChat.Settings:GetEmojiInfo(emoteId)
-		if isCustom and not str:find("^<:[%w_%-]+:%d+>", startIdx - 1) then
+		if
+			isCustom
+			and not str:find("^<:[%w_%-]+:%d+>", startIdx - 1)
+			and not str:find("^<a:[%w_%-]+:%d+>", startIdx - 2)
+		then
 			str = string.format(
-				"%s<:%s:%s>%s",
+				"%s<%s:%s:%s>%s",
 				str:sub(1, startIdx - 1),
+				emote.isAnimated and "a" or "",
 				emote.id,
 				emote.numericId,
 				str:sub(endIdx + 1)

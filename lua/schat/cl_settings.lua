@@ -128,7 +128,12 @@ function Settings:AddOnlineEmoji(emoji)
 
 	table.insert(
 		emojis,
-		{ id = emoji.id, uri = emoji.uri, numericId = emoji.numericId }
+		{
+			id = emoji.id,
+			uri = emoji.uri,
+			numericId = emoji.numericId,
+			isAnimated = emoji.isAnimated,
+		}
 	)
 end
 

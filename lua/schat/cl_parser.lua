@@ -21,7 +21,7 @@ local rangeTypes = {
 	{ type = "color", pattern = "<%d+,%d+,%d+>" },
 	{ type = "rainbow", pattern = "%$%$[^%c]+%$%$" },
 	{ type = "advert", pattern = "%[%[[^%c]+%]%]" },
-	{ type = "emoji", pattern = "<:[%w_%-]+:%d+>", priority = true },
+	{ type = "emoji", pattern = "<a?:[%w_%-]+:%d+>", priority = true },
 	{ type = "emoji", pattern = ":[%w_%-]+:" },
 	{ type = "spoiler", pattern = "||[^%c]-[^|]*||" },
 	{ type = "code_line", pattern = "`[^%c]+[`]*`" },

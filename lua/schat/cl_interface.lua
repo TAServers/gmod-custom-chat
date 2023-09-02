@@ -83,10 +83,12 @@ function SChat:CreatePanels()
 	self.chatBox:DockMargin(0, -24, 0, 0)
 	self.chatBox:UpdateEmojiPanel()
 
-	self.chatBox.OnSelectEmoji = function(_, id, numericId)
+	self.chatBox.OnSelectEmoji = function(_, id, numericId, isAnimated)
 		self:AppendAtCaret(
 			string.format(
-				numericId == nil and ":%s:" or "<:%s:%s>",
+				numericId == nil and ":%s:"
+					or isAnimated and "<a:%s:%s>"
+					or "<:%s:%s>",
 				id,
 				numericId
 			)

@@ -195,12 +195,15 @@ function SChat:GenerateEmojiList()
 					or emoji.uri
 				local numericId = isBuiltin and "undefined"
 					or string.format("'%s'", emoji.numericId)
+				local isAnimated = (not isBuiltin and emoji.isAnimated)
+						and "true"
+					or "false"
 
 				lines[#lines + 1] = [[
                     var elEmoji = document.createElement('img');
                     elEmoji.src = ']] .. SafeString(src) .. [[';
                     elEmoji.className = 'emoji-button';
-                    elEmoji.onclick = function(){ SChatBox.OnSelectEmoji(']] .. id .. [[', ]] .. numericId .. [[) };
+                    elEmoji.onclick = function(){ SChatBox.OnSelectEmoji(']] .. id .. [[', ]] .. numericId .. [[, ]] .. isAnimated .. [[) };
                     elEmojiPanel.appendChild(elEmoji);
                 ]]
 			end
@@ -313,6 +316,10 @@ end
 
 JSBuilder.builders["emoji"] = function(val, color, font)
 	local _, _, emojiId = string.find(val, "<?:(.+):")
+	if not emojiId then
+		_, _, emojiId = string.find(val, "<a:(.+):")
+	end
+
 	local emoji, isOnline = SChat.Settings:GetEmojiInfo(emojiId)
 
 	if emoji then
