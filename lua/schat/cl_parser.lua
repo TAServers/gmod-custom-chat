@@ -21,7 +21,8 @@ local rangeTypes = {
 	{ type = "color", pattern = "<%d+,%d+,%d+>" },
 	{ type = "rainbow", pattern = "%$%$[^%c]+%$%$" },
 	{ type = "advert", pattern = "%[%[[^%c]+%]%]" },
-	{ type = "emoji", pattern = "<:[%w_%-]+:%d+>" },
+	{ type = "emoji", pattern = "<:[%w_%-]+:%d+>", priority = true },
+	{ type = "emoji", pattern = ":[%w_%-]+:" },
 	{ type = "spoiler", pattern = "||[^%c]-[^|]*||" },
 	{ type = "code_line", pattern = "`[^%c]+[`]*`" },
 	{ type = "code", pattern = "{{[^%z]-[^}}]*}}" },
@@ -43,7 +44,10 @@ local function FindAllRangesOfType(r, str)
 		pStart, pEnd = string.find(str, r.pattern, pStart)
 
 		if pStart then
-			table_insert(ranges, { s = pStart, e = pEnd, type = r.type })
+			table_insert(
+				ranges,
+				{ s = pStart, e = pEnd, type = r.type, priority = r.priority }
+			)
 			pStart = pEnd
 		end
 	end
@@ -53,18 +57,33 @@ end
 
 -- Merges a new range into a table of ranges
 -- in a way that overrides existing ranges.
-local function MergeRangeInto(tbl, newr)
+local function MergeRangeInto(tbl, newRange)
 	local newTbl = {}
+	local discardNew = false
 
 	for _, other in ipairs(tbl) do
 		-- only include other ranges that do not overlap with the new range
-		if other.s > newr.e or other.e < newr.s then
+		if discardNew or other.s > newRange.e or other.e < newRange.s then
 			newTbl[#newTbl + 1] = other
+		elseif -- This is a hack to support two distinct emoji patterns, as Lua has no optional group matching
+			newRange.type == "emoji"
+			and other.type == "emoji"
+			and other.priority
+		then
+			table.insert(newTbl, other)
+			discardNew = true
 		end
 	end
 
-	-- finally, include the new range
-	newTbl[#newTbl + 1] = { s = newr.s, e = newr.e, type = newr.type }
+	if not discardNew then
+		-- finally, include the new range
+		newTbl[#newTbl + 1] = {
+			s = newRange.s,
+			e = newRange.e,
+			type = newRange.type,
+			priority = newRange.priority,
+		}
+	end
 
 	return newTbl
 end
