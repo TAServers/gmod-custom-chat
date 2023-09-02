@@ -312,7 +312,7 @@ JSBuilder.builders["player"] = function(val, color, font)
 end
 
 JSBuilder.builders["emoji"] = function(val, color, font)
-	local _, _, emojiId = string.find(val, "<:(.+):")
+	local _, _, emojiId = string.find(val, "<?:(.+):")
 	local path, isOnline = SChat.Settings:GetEmojiInfo(emojiId)
 
 	if path then
