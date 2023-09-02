@@ -193,7 +193,7 @@ function SChat:GenerateEmojiList()
 				local src = isBuiltin
 						and "asset://garrysmod/materials/icon72/" .. emoji .. ".png"
 					or emoji.uri
-				local numericId = isBuiltin and emoji.numericId or nil
+				local numericId = isBuiltin and emoji.numericId or "nil"
 
 				lines[#lines + 1] = [[
                     var elEmoji = document.createElement('img');
