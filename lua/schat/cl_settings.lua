@@ -126,15 +126,12 @@ end
 function Settings:AddOnlineEmoji(emoji)
 	local emojis = self.emojiCategories[1].emojis
 
-	table.insert(
-		emojis,
-		{
-			id = emoji.id,
-			uri = emoji.uri,
-			numericId = emoji.numericId,
-			isAnimated = emoji.isAnimated,
-		}
-	)
+	table.insert(emojis, {
+		id = emoji.id,
+		uri = emoji.uri,
+		numericId = emoji.numericId,
+		isAnimated = emoji.isAnimated,
+	})
 end
 
 function Settings:ClearCustomEmojis()
