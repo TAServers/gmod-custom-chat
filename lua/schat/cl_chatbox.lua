@@ -515,9 +515,12 @@ function SChatBox:Init()
 		self:OnImageHover(url, isHovering)
 	end)
 
-	self:AddInternalCallback("OnSelectEmoji", function(id)
-		self:OnSelectEmoji(id)
-	end)
+	self:AddInternalCallback(
+		"OnSelectEmoji",
+		function(id, numericId, isAnimated)
+			self:OnSelectEmoji(id, numericId, isAnimated)
+		end
+	)
 
 	self:AddInternalCallback("OnRightClick", function(data, isLink, steamId64)
 		if SChat.isOpen then
@@ -659,6 +662,6 @@ end
 
 function SChatBox:OnPressEnter() end
 function SChatBox:OnImageHover(_url, _isHovering) end
-function SChatBox:OnSelectEmoji() end
+function SChatBox:OnSelectEmoji(_id, _numericId, _isAnimated) end
 
 vgui.Register("SChatBox", SChatBox, "DHTML")

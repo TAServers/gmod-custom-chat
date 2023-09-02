@@ -189,16 +189,21 @@ function SChat:GenerateEmojiList()
 			for _, emoji in ipairs(cat.emojis) do
 				local isBuiltin = type(emoji) == "string"
 
-				local id = isBuiltin and emoji or emoji[1]
+				local id = isBuiltin and emoji or emoji.id
 				local src = isBuiltin
 						and "asset://garrysmod/materials/icon72/" .. emoji .. ".png"
-					or emoji[2]
+					or emoji.uri
+				local numericId = isBuiltin and "undefined"
+					or string.format("'%s'", emoji.numericId)
+				local isAnimated = (not isBuiltin and emoji.isAnimated)
+						and "true"
+					or "false"
 
 				lines[#lines + 1] = [[
                     var elEmoji = document.createElement('img');
                     elEmoji.src = ']] .. SafeString(src) .. [[';
                     elEmoji.className = 'emoji-button';
-                    elEmoji.onclick = function(){ SChatBox.OnSelectEmoji(']] .. id .. [[') };
+                    elEmoji.onclick = function(){ SChatBox.OnSelectEmoji(']] .. id .. [[', ]] .. numericId .. [[, ]] .. isAnimated .. [[) };
                     elEmojiPanel.appendChild(elEmoji);
                 ]]
 			end
@@ -310,12 +315,15 @@ JSBuilder.builders["player"] = function(val, color, font)
 end
 
 JSBuilder.builders["emoji"] = function(val, color, font)
-	local path, isOnline = SChat.Settings:GetEmojiInfo(val:sub(2, -2))
+	local _, _, emojiId = string.find(val, "<?:(.+):")
+	if not emojiId then
+		_, _, emojiId = string.find(val, "<a:(.+):")
+	end
 
-	if path then
-		if not isOnline then
-			path = "asset://garrysmod/" .. path
-		end
+	local emoji, isOnline = SChat.Settings:GetEmojiInfo(emojiId)
+
+	if emoji then
+		local path = isOnline and emoji.uri or "asset://garrysmod/" .. emoji
 
 		return JSBuilder:CreateImage(path, nil, "emoji", val)
 	end

@@ -20,10 +20,6 @@ function SChat:CanSetServerTheme(ply)
 	return ply:IsSuperAdmin()
 end
 
-function SChat:CanSetServerEmojis(ply)
-	return ply:IsSuperAdmin()
-end
-
 function SChat:CanSetChatTags(ply)
 	return ply:IsSuperAdmin()
 end
@@ -73,6 +69,38 @@ local trimLookup = {
 	[utf8.char(0x2067)] = "", -- Right-To-Left Isolate
 }
 
+--- Normalises custom emotes to the Discord format
+---@param str string
+---@return string
+local function normaliseEmotes(str)
+	local startIdx, endIdx, emoteId
+
+	while true do
+		startIdx, endIdx, emoteId = str:find(":([%w_%-]+):", endIdx)
+		if not startIdx or not endIdx then
+			break
+		end
+
+		local emote, isCustom = SChat.Settings:GetEmojiInfo(emoteId)
+		if
+			isCustom
+			and not str:find("^<:[%w_%-]+:%d+>", startIdx - 1)
+			and not str:find("^<a:[%w_%-]+:%d+>", startIdx - 2)
+		then
+			str = string.format(
+				"%s<%s:%s:%s>%s",
+				str:sub(1, startIdx - 1),
+				emote.isAnimated and "a" or "",
+				emote.id,
+				emote.numericId,
+				str:sub(endIdx + 1)
+			)
+		end
+	end
+
+	return str
+end
+
 function SChat.CleanupString(str)
 	if not str then
 		return ""
@@ -99,6 +127,8 @@ function SChat.CleanupString(str)
 			return "\n"
 		end
 	end)
+
+	str = normaliseEmotes(str)
 
 	return str:Trim()
 end

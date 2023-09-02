@@ -83,8 +83,16 @@ function SChat:CreatePanels()
 	self.chatBox:DockMargin(0, -24, 0, 0)
 	self.chatBox:UpdateEmojiPanel()
 
-	self.chatBox.OnSelectEmoji = function(_, id)
-		self:AppendAtCaret(":" .. id .. ":")
+	self.chatBox.OnSelectEmoji = function(_, id, numericId, isAnimated)
+		self:AppendAtCaret(
+			string.format(
+				numericId == nil and ":%s:"
+					or isAnimated and "<a:%s:%s>"
+					or "<:%s:%s>",
+				id,
+				numericId
+			)
+		)
 	end
 
 	self.chatBox.OnPressEnter = function()
@@ -454,14 +462,6 @@ This means that no matter which site they come from, you will load it, and it CA
 		self.frame:SetPos(Settings:GetDefaultPosition())
 	end)
 
-	if self:CanSetServerEmojis(LocalPlayer()) then
-		optionsMenu
-			:AddOption("[Admin] Custom Emojis...", function()
-				Settings:ShowServerEmojisPanel()
-			end)
-			:SetIcon("icon16/emoticon_tongue.png")
-	end
-
 	if self:CanSetChatTags(LocalPlayer()) then
 		optionsMenu
 			:AddOption("[Admin] Chat Tags...", function()
@@ -792,8 +792,8 @@ net.Receive("schat.set_emojis", function()
 		data = util.JSONToTable(data)
 
 		if data then
-			for _, v in ipairs(data) do
-				Settings:AddOnlineEmoji(v[1], v[2])
+			for _, emoji in ipairs(data) do
+				Settings:AddOnlineEmoji(emoji)
 			end
 		else
 			SChat.PrintF("Failed to parse emojis from the server!")

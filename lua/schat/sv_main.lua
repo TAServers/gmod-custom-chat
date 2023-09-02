@@ -206,21 +206,20 @@ function Settings:SetChatTags(data, admin)
 	self:Save()
 end
 
+function Settings:GetEmojiInfo(id)
+	for _, emoji in ipairs(self.emojiData) do
+		if id == emoji.id then
+			return emoji, true
+		end
+	end
+end
+
 net.Receive("schat.set_theme", function(_, ply)
 	if SChat:CanSetServerTheme(ply) then
 		local themeData = Settings:Unserialize(net.ReadString())
 		Settings:SetTheme(themeData, ply:Nick())
 	else
 		ply:ChatPrint("SChat: You cannot change the server theme.")
-	end
-end)
-
-net.Receive("schat.set_emojis", function(_, ply)
-	if SChat:CanSetServerEmojis(ply) then
-		local emojiData = Settings:Unserialize(net.ReadString())
-		Settings:SetEmojis(emojiData, ply:Nick())
-	else
-		ply:ChatPrint("SChat: You cannot change the server emojis.")
 	end
 end)
 
