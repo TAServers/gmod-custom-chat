@@ -105,7 +105,7 @@ function Settings:SetWhitelistEnabled(enabled)
 end
 
 -- Returns the properties of a emoji.
--- path, isOnline = Settings:GetEmojiInfo(id)
+-- path|emoji, isOnline = Settings:GetEmojiInfo(id)
 function Settings:GetEmojiInfo(id)
 	for _, cat in ipairs(self.emojiCategories) do
 		for _, emoji in ipairs(cat.emojis) do
@@ -115,7 +115,7 @@ function Settings:GetEmojiInfo(id)
 				end
 			else
 				if id == emoji.id then
-					return emoji.uri, true
+					return emoji, true
 				end
 			end
 		end

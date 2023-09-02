@@ -313,12 +313,10 @@ end
 
 JSBuilder.builders["emoji"] = function(val, color, font)
 	local _, _, emojiId = string.find(val, "<?:(.+):")
-	local path, isOnline = SChat.Settings:GetEmojiInfo(emojiId)
+	local emoji, isOnline = SChat.Settings:GetEmojiInfo(emojiId)
 
-	if path then
-		if not isOnline then
-			path = "asset://garrysmod/" .. path
-		end
+	if emoji then
+		local path = isOnline and emoji.uri or "asset://garrysmod/" .. emoji
 
 		return JSBuilder:CreateImage(path, nil, "emoji", val)
 	end
