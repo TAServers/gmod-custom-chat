@@ -20,10 +20,6 @@ function SChat:CanSetServerTheme(ply)
 	return ply:IsSuperAdmin()
 end
 
-function SChat:CanSetServerEmojis(ply)
-	return ply:IsSuperAdmin()
-end
-
 function SChat:CanSetChatTags(ply)
 	return ply:IsSuperAdmin()
 end

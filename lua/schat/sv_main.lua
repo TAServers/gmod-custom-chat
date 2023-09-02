@@ -215,15 +215,6 @@ net.Receive("schat.set_theme", function(_, ply)
 	end
 end)
 
-net.Receive("schat.set_emojis", function(_, ply)
-	if SChat:CanSetServerEmojis(ply) then
-		local emojiData = Settings:Unserialize(net.ReadString())
-		Settings:SetEmojis(emojiData, ply:Nick())
-	else
-		ply:ChatPrint("SChat: You cannot change the server emojis.")
-	end
-end)
-
 net.Receive("schat.set_tags", function(_, ply)
 	if SChat:CanSetChatTags(ply) then
 		local tagsData = Settings:Unserialize(net.ReadString())
